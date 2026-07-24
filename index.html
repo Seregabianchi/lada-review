@@ -177,25 +177,15 @@
         <h2>☕ Ваш відгук</h2>
         <div class="subtitle">Кожна думка — як зернятко для ідеального напою</div>
 
-        <!-- Прогрес-бар -->
         <div class="progress-wrapper">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
             <div class="progress-label" id="progressLabel">0 / 7 заповнено</div>
         </div>
 
-        <!-- Середній рейтинг -->
-        <div class="live-rating" id="liveRating">
-            Ваш середній рейтинг
-            <span>—</span>
-        </div>
-
-        <!-- Блок повідомлень -->
+        <div class="live-rating" id="liveRating">Ваш середній рейтинг <span>—</span></div>
         <div id="messageBox"></div>
 
         <form id="reviewForm">
-            <!-- Питання 1 -->
             <div class="question" data-question="service">
                 <p>1. Оцініть сервіс</p>
                 <div class="stars-wrapper">
@@ -209,8 +199,6 @@
                     <div class="emoji-feedback" id="emoji-service"></div>
                 </div>
             </div>
-
-            <!-- Питання 2 -->
             <div class="question" data-question="drink">
                 <p>2. Чи сподобався напій?</p>
                 <div class="stars-wrapper">
@@ -224,8 +212,6 @@
                     <div class="emoji-feedback" id="emoji-drink"></div>
                 </div>
             </div>
-
-            <!-- Питання 3 -->
             <div class="question" data-question="payment">
                 <p>3. Зручність оплати</p>
                 <div class="stars-wrapper">
@@ -239,8 +225,6 @@
                     <div class="emoji-feedback" id="emoji-payment"></div>
                 </div>
             </div>
-
-            <!-- Питання 4 -->
             <div class="question" data-question="recommend">
                 <p>4. Чи порекомендуєте нас?</p>
                 <div class="stars-wrapper">
@@ -254,23 +238,18 @@
                     <div class="emoji-feedback" id="emoji-recommend"></div>
                 </div>
             </div>
-
-            <!-- Питання 5 -->
             <div class="question" data-question="wishes">
-                <p>5. Напишіть свої побажання щодо покращення сервісу</p>
-                <textarea name="wishes" rows="3" placeholder="Ваші ідеї та побажання..."></textarea>
+                <p>5. Напишіть свої побажання</p>
+                <textarea name="wishes" rows="3" placeholder="Ваші ідеї..."></textarea>
             </div>
-
-            <!-- Питання 6 -->
             <div class="question" data-question="contact_name">
-                <p>6. Якщо з'явилися питання, залиште контакти</p>
+                <p>6. Залиште контакти</p>
                 <input type="text" name="contact_name" placeholder="Ваше ім'я" style="margin-bottom:10px;">
                 <input type="tel" name="contact_phone" placeholder="Телефон 📱">
             </div>
-
             <button type="submit" id="submitBtn">📩 Надіслати відгук</button>
         </form>
-        <div id="thanks">✅ Дякуємо за ваш відгук!<br>Ви робите нашу каву смачнішою ☕</div>
+        <div id="thanks">✅ Дякуємо!<br>Ви робите нашу каву смачнішою ☕</div>
     </div>
 
     <script>
@@ -286,142 +265,100 @@
             const starGroups = ['service', 'drink', 'payment', 'recommend'];
             const textFields = ['wishes', 'contact_name', 'contact_phone'];
             const totalFields = starGroups.length + textFields.length;
-
-            const emojiMap = {
-                1: '😡',
-                2: '😟',
-                3: '😐',
-                4: '😊',
-                5: '😍'
-            };
+            const emojiMap = {1:'😡',2:'😟',3:'😐',4:'😊',5:'😍'};
 
             function showMessage(text, type) {
                 messageBox.textContent = text;
                 messageBox.className = type + ' show';
                 clearTimeout(messageBox._timeout);
-                messageBox._timeout = setTimeout(function() {
+                messageBox._timeout = setTimeout(() => {
                     messageBox.className = '';
                     messageBox.style.display = 'none';
                 }, 4000);
             }
-
             function countFilledFields() {
-                var filled = 0;
-                starGroups.forEach(function(name) {
-                    if (form.querySelector('input[name="' + name + '"]:checked')) filled++;
+                let filled = 0;
+                starGroups.forEach(name => {
+                    if (form.querySelector(`input[name="${name}"]:checked`)) filled++;
                 });
-                textFields.forEach(function(name) {
-                    var el = form.querySelector('[name="' + name + '"]');
+                textFields.forEach(name => {
+                    const el = form.querySelector(`[name="${name}"]`);
                     if (el && el.value.trim() !== '') filled++;
                 });
                 return filled;
             }
-
             function updateProgress() {
-                var filled = countFilledFields();
-                var percent = Math.round((filled / totalFields) * 100);
+                const filled = countFilledFields();
+                const percent = Math.round((filled / totalFields) * 100);
                 progressFill.style.width = percent + '%';
                 progressLabel.textContent = filled + ' / ' + totalFields + ' заповнено';
             }
-
             function allStarsFilled() {
-                return starGroups.every(function(name) {
-                    return form.querySelector('input[name="' + name + '"]:checked');
-                });
+                return starGroups.every(name => form.querySelector(`input[name="${name}"]:checked`));
             }
-
             function updateButtonState() {
-                if (allStarsFilled()) {
-                    btn.disabled = false;
-                } else {
-                    btn.disabled = true;
-                }
+                btn.disabled = !allStarsFilled();
                 updateProgress();
             }
-
             function updateLiveRating() {
-                var sum = 0;
-                var count = 0;
-                starGroups.forEach(function(name) {
-                    var checked = form.querySelector('input[name="' + name + '"]:checked');
-                    if (checked) {
-                        sum += parseInt(checked.value);
-                        count++;
-                    }
+                let sum = 0, count = 0;
+                starGroups.forEach(name => {
+                    const checked = form.querySelector(`input[name="${name}"]:checked`);
+                    if (checked) { sum += parseInt(checked.value); count++; }
                 });
-
-                if (count === 0) {
-                    liveRatingSpan.textContent = '—';
-                } else {
-                    var avg = (sum / count).toFixed(1);
-                    liveRatingSpan.textContent = avg + ' ★';
-                }
+                liveRatingSpan.textContent = count === 0 ? '—' : (sum / count).toFixed(1) + ' ★';
             }
-
             function updateEmoji(questionName) {
-                var checked = form.querySelector('input[name="' + questionName + '"]:checked');
-                var emojiEl = document.getElementById('emoji-' + questionName);
+                const checked = form.querySelector(`input[name="${questionName}"]:checked`);
+                const emojiEl = document.getElementById('emoji-' + questionName);
                 if (!emojiEl) return;
-
                 if (checked) {
-                    var val = parseInt(checked.value);
-                    emojiEl.textContent = emojiMap[val] || '';
+                    emojiEl.textContent = emojiMap[parseInt(checked.value)] || '';
                     emojiEl.classList.add('active');
                 } else {
                     emojiEl.textContent = '';
                     emojiEl.classList.remove('active');
                 }
             }
-
             function highlightEmptyStars() {
-                var firstEmpty = null;
-                starGroups.forEach(function(name) {
-                    var questionDiv = form.querySelector('.question[data-question="' + name + '"]');
-                    var checked = form.querySelector('input[name="' + name + '"]:checked');
-                    if (!checked) {
-                        questionDiv.classList.add('error-highlight');
-                        if (!firstEmpty) firstEmpty = questionDiv;
-                        setTimeout(function() {
-                            questionDiv.classList.remove('error-highlight');
-                        }, 2000);
+                let firstEmpty = null;
+                starGroups.forEach(name => {
+                    const div = form.querySelector(`.question[data-question="${name}"]`);
+                    if (!form.querySelector(`input[name="${name}"]:checked`)) {
+                        div.classList.add('error-highlight');
+                        if (!firstEmpty) firstEmpty = div;
+                        setTimeout(() => div.classList.remove('error-highlight'), 2000);
                     }
                 });
-                if (firstEmpty) {
-                    firstEmpty.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
+                if (firstEmpty) firstEmpty.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
 
-            // Слухачі подій
-            form.addEventListener('change', function(e) {
+            form.addEventListener('change', e => {
                 if (e.target.type === 'radio') {
-                    var name = e.target.name;
                     updateButtonState();
                     updateLiveRating();
-                    updateEmoji(name);
+                    updateEmoji(e.target.name);
                 }
             });
-
-            form.addEventListener('input', function(e) {
+            form.addEventListener('input', e => {
                 if (e.target.type === 'text' || e.target.type === 'tel' || e.target.tagName === 'TEXTAREA') {
                     updateProgress();
                 }
             });
 
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', e => {
                 e.preventDefault();
-
                 if (!allStarsFilled()) {
                     showMessage('☝ Будь ласка, оцініть усі 4 критерії зірочками', 'error');
                     highlightEmptyStars();
                     return;
                 }
-
                 btn.disabled = true;
-                var originalText = btn.textContent;
+                const originalText = btn.textContent;
                 btn.textContent = '⏳ Відправляю...';
 
-                var formData = new FormData(form);
-                var data = {
+                const formData = new FormData(form);
+                const data = {
                     service: formData.get('service'),
                     drink: formData.get('drink'),
                     payment: formData.get('payment'),
@@ -432,24 +369,23 @@
                     timestamp: new Date().toISOString()
                 };
 
-                // ====== ПРЯМА ВІДПРАВКА В TELEGRAM З ІДЕНТИФІКАТОРОМ АПАРАТА ======
-                var botToken = '8930123798:AAEtEGnrXkuyHIUbIi0ri9VELhXauOxiOZA';
-                var chatId = '873345013';
+                // ---------- ВІДПРАВКА В ГРУПУ МОНІТОРИНГУ ----------
+                const botToken = '8878086128:AAEeugVhz-nWLE6cedLPkvaGmEc4LFbYJLg';
+                const chatId = '-1003980331765';
 
-                // Отримуємо source з URL
-                var urlParams = new URLSearchParams(window.location.search);
-                var source = urlParams.get('source') || 'невідомий апарат';
+                const urlParams = new URLSearchParams(window.location.search);
+                const source = urlParams.get('source') || 'невідомий апарат';
 
-                var message = '⭐ Новий відгук (' + source + ')\n';
-                message += 'Сервіс: ' + data.service + ' з 5\n';
-                message += 'Напій: ' + data.drink + ' з 5\n';
-                message += 'Оплата: ' + data.payment + ' з 5\n';
-                message += 'Рекомендація: ' + data.recommend + ' з 5\n';
-                if (data.wishes) message += 'Побажання: ' + data.wishes + '\n';
-                if (data.contact_name) message += 'Ім\'я: ' + data.contact_name + '\n';
-                if (data.contact_phone) message += 'Телефон: ' + data.contact_phone + '\n';
+                let message = `⭐ Новий відгук (${source})\n`;
+                message += `Сервіс: ${data.service} з 5\n`;
+                message += `Напій: ${data.drink} з 5\n`;
+                message += `Оплата: ${data.payment} з 5\n`;
+                message += `Рекомендація: ${data.recommend} з 5\n`;
+                if (data.wishes) message += `Побажання: ${data.wishes}\n`;
+                if (data.contact_name) message += `Ім'я: ${data.contact_name}\n`;
+                if (data.contact_phone) message += `Телефон: ${data.contact_phone}\n`;
 
-                fetch('https://api.telegram.org/bot' + botToken + '/sendMessage', {
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -457,7 +393,7 @@
                         text: message
                     })
                 })
-                .then(function(response) {
+                .then(response => {
                     if (!response.ok) throw new Error('Помилка Telegram');
                     form.style.display = 'none';
                     thanks.style.display = 'block';
@@ -466,7 +402,7 @@
                     messageBox.style.display = 'none';
                     thanks.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 })
-                .catch(function() {
+                .catch(() => {
                     showMessage('❌ Помилка відправки. Спробуйте ще раз.', 'error');
                     btn.disabled = false;
                     btn.textContent = originalText;
@@ -474,7 +410,6 @@
                 });
             });
 
-            // Ініціалізація
             updateButtonState();
             updateLiveRating();
             updateProgress();
