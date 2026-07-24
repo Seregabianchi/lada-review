@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ваш відгук ☕</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a0f07;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(139, 69, 19, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(101, 67, 33, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(160, 82, 45, 0.1) 0%, transparent 50%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.005) 2px, rgba(255,255,255,0.005) 4px),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><circle cx="20" cy="30" r="3" fill="%23d4a574"/><circle cx="70" cy="20" r="4" fill="%23d4a574"/><circle cx="85" cy="65" r="2.5" fill="%23d4a574"/><circle cx="15" cy="75" r="3.5" fill="%23d4a574"/><circle cx="45" cy="55" r="2" fill="%23d4a574"/><circle cx="60" cy="80" r="3" fill="%23d4a574"/></svg>');
+            background-size: 100% 100%, 100% 100%, 100% 100%, 4px 4px, 4px 4px, 200px 200px;
+            color: #f5e6d3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed; bottom: 0; left: 0; right: 0; height: 150px;
+            background: radial-gradient(ellipse at 30% 100%, rgba(60,30,15,0.4) 0%, transparent 70%),
+                        radial-gradient(ellipse at 70% 100%, rgba(50,25,10,0.3) 0%, transparent 70%),
+                        radial-gradient(ellipse at 50% 100%, rgba(40,20,8,0.5) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+        .steam-left, .steam-right {
+            position: fixed; pointer-events: none; z-index: 0; opacity: 0;
+            animation: rise 8s ease-in-out infinite;
+        }
+        .steam-left {
+            bottom: 5%; left: 10%; width: 60px; height: 60px;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(8px); animation-delay: 0s;
+        }
+        .steam-right {
+            bottom: 5%; right: 12%; width: 70px; height: 70px;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(10px); animation-delay: 3s;
+        }
+        @keyframes rise {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            20% { opacity: 0.7; }
+            50% { opacity: 0.4; }
+            100% { transform: translateY(-180px) scale(2.5); opacity: 0; }
+        }
+        .container {
+            background: linear-gradient(145deg, rgba(45,25,12,0.75), rgba(30,15,5,0.8), rgba(45,25,12,0.75));
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 35px 28px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(180,120,60,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+            border: 1px solid rgba(180,130,80,0.25);
+            position: relative; z-index: 1;
+        }
+        .container::before {
+            content: '☕';
+            position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+            font-size: 2em;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-8px); }
+        }
+        h2 {
+            text-align: center; font-size: 2em; margin-bottom: 6px; margin-top: 5px;
+            background: linear-gradient(135deg, #e8c48a, #c68b3c, #e8c48a);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); letter-spacing: 1px;
+        }
+        .subtitle { text-align: center; opacity: 0.8; margin-bottom: 20px; color: #d4a574; font-style: italic; font-size: 0.95em; }
+        .progress-wrapper { margin-bottom: 25px; }
+        .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.4); }
+        .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #c68b3c, #e8c48a); border-radius: 10px; transition: width 0.4s ease; box-shadow: 0 0 10px rgba(198,139,60,0.5); }
+        .progress-label { text-align: right; font-size: 0.75em; color: #d4a574; margin-top: 4px; opacity: 0.8; }
+        .live-rating { text-align: center; margin-bottom: 20px; padding: 10px; background: rgba(0,0,0,0.25); border-radius: 15px; border: 1px dashed rgba(180,130,80,0.3); font-size: 0.9em; color: #d4a574; }
+        .live-rating span { font-size: 1.6em; font-weight: bold; color: #e8c48a; display: block; }
+        .question { margin-bottom: 22px; padding: 8px 12px; border-radius: 16px; border: 2px solid transparent; transition: all 0.3s ease; }
+        .question.error-highlight { border-color: rgba(255,80,80,0.7) !important; background: rgba(255,50,50,0.08); animation: shake 0.5s ease-in-out; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+        .question p { font-weight: 600; margin-bottom: 10px; font-size: 1.05em; color: #f0d9b5; }
+        .stars-wrapper { display: flex; align-items: center; gap: 10px; }
+        .stars { display: flex; gap: 8px; flex-direction: row-reverse; justify-content: flex-end; }
+        .stars input { display: none; }
+        .stars label {
+            font-size: 2.3em; color: #3a2a1a; cursor: pointer;
+            transition: color 0.2s, transform 0.2s, text-shadow 0.2s;
+            user-select: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+        }
+        .stars label:active { transform: scale(0.85) !important; }
+        .stars input:checked ~ label,
+        .stars label:hover,
+        .stars label:hover ~ label {
+            color: #ffb74d; transform: scale(1.25);
+            text-shadow: 0 0 15px rgba(255,183,77,0.7), 0 0 30px rgba(255,183,77,0.3);
+            animation: starPop 0.3s ease-out;
+        }
+        @keyframes starPop {
+            0% { transform: scale(0.7); }
+            50% { transform: scale(1.35); }
+            100% { transform: scale(1.25); }
+        }
+        .emoji-feedback { font-size: 1.8em; min-width: 40px; text-align: center; opacity: 0.5; transition: all 0.3s ease; }
+        .emoji-feedback.active { opacity: 1; animation: bounceIn 0.4s ease; }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        textarea, input[type="text"], input[type="tel"] {
+            width: 100%; padding: 14px 18px; border-radius: 20px;
+            border: 1px solid rgba(180,130,80,0.3); background: rgba(20,10,2,0.5);
+            color: #f5e6d3; font-size: 1em; outline: none; transition: 0.3s; resize: vertical; font-family: inherit;
+        }
+        textarea::placeholder, input::placeholder { color: rgba(212,165,116,0.5); font-style: italic; }
+        textarea:focus, input:focus {
+            border-color: #c68b3c; box-shadow: 0 0 20px rgba(198,139,60,0.3), inset 0 0 10px rgba(198,139,60,0.05);
+            background: rgba(30,15,5,0.7);
+        }
+        #messageBox { padding: 12px 18px; border-radius: 15px; margin-bottom: 15px; text-align: center; font-weight: 600; font-size: 0.95em; opacity: 0; transform: translateY(-10px); transition: all 0.3s ease; display: none; }
+        #messageBox.show { display: block; opacity: 1; transform: translateY(0); }
+        #messageBox.error { background: rgba(200,50,50,0.2); border: 1px solid rgba(255,100,100,0.4); color: #ffaaaa; }
+        #messageBox.success { background: rgba(50,180,120,0.2); border: 1px solid rgba(100,220,160,0.4); color: #aaffcc; }
+        button {
+            width: 100%; padding: 16px; border: none; border-radius: 30px;
+            background: linear-gradient(135deg, #8b4513, #a0522d, #8b4513);
+            color: #f5e6d3; font-size: 1.2em; font-weight: bold; cursor: pointer;
+            transition: all 0.3s ease; margin-top: 10px; letter-spacing: 1px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4); position: relative; overflow: hidden;
+        }
+        button::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s ease;
+        }
+        button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(160,82,45,0.5), 0 0 40px rgba(198,139,60,0.2); background: linear-gradient(135deg, #a0522d, #c68b3c, #a0522d); }
+        button:hover:not(:disabled)::before { left: 100%; }
+        button:active:not(:disabled) { transform: scale(0.97); }
+        button:disabled { background: #3a2a1a; color: #6b5b4a; cursor: not-allowed; box-shadow: none; }
+        button:disabled::before { display: none; }
+        #thanks { display: none; text-align: center; color: #aaffcc; font-size: 1.3em; margin-top: 20px; animation: fadeInUp 0.6s ease-out; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 500px) {
+            .container { padding: 25px 18px; border-radius: 24px; }
+            .stars label { font-size: 2em; gap: 6px; }
+            h2 { font-size: 1.6em; }
+            .container::before { font-size: 1.6em; top: -14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="steam-left"></div>
+    <div class="steam-right"></div>
+
+    <div class="container">
+        <h2>☕ Ваш відгук</h2>
+        <div class="subtitle">Кожна думка — як зернятко для ідеального напою</div>
+
+        <!-- Прогрес-бар -->
+        <div class="progress-wrapper">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-label" id="progressLabel">0 / 7 заповнено</div>
+        </div>
+
+        <!-- Середній рейтинг -->
+        <div class="live-rating" id="liveRating">
+            Ваш середній рейтинг
+            <span>—</span>
+        </div>
+
+        <!-- Блок повідомлень -->
+        <div id="messageBox"></div>
+
+        <form id="reviewForm">
+            <!-- Питання 1 -->
+            <div class="question" data-question="service">
+                <p>1. Оцініть сервіс</p>
+                <div class="stars-wrapper">
+                    <div class="stars" data-name="service">
+                        <input type="radio" id="s5" name="service" value="5"><label for="s5">★</label>
+                        <input type="radio" id="s4" name="service" value="4"><label for="s4">★</label>
+                        <input type="radio" id="s3" name="service" value="3"><label for="s3">★</label>
+                        <input type="radio" id="s2" name="service" value="2"><label for="s2">★</label>
+                        <input type="radio" id="s1" name="service" value="1"><label for="s1">★</label>
+                    </div>
+                    <div class="emoji-feedback" id="emoji-service"></div>
+                </div>
+            </div>
+
+            <!-- Питання 2 -->
+            <div class="question" data-question="drink">
+                <p>2. Чи сподобався напій?</p>
+                <div class="stars-wrapper">
+                    <div class="stars" data-name="drink">
+                        <input type="radio" id="d5" name="drink" value="5"><label for="d5">★</label>
+                        <input type="radio" id="d4" name="drink" value="4"><label for="d4">★</label>
+                        <input type="radio" id="d3" name="drink" value="3"><label for="d3">★</label>
+                        <input type="radio" id="d2" name="drink" value="2"><label for="d2">★</label>
+                        <input type="radio" id="d1" name="drink" value="1"><label for="d1">★</label>
+                    </div>
+                    <div class="emoji-feedback" id="emoji-drink"></div>
+                </div>
+            </div>
+
+            <!-- Питання 3 -->
+            <div class="question" data-question="payment">
+                <p>3. Зручність оплати</p>
+                <div class="stars-wrapper">
+                    <div class="stars" data-name="payment">
+                        <input type="radio" id="p5" name="payment" value="5"><label for="p5">★</label>
+                        <input type="radio" id="p4" name="payment" value="4"><label for="p4">★</label>
+                        <input type="radio" id="p3" name="payment" value="3"><label for="p3">★</label>
+                        <input type="radio" id="p2" name="payment" value="2"><label for="p2">★</label>
+                        <input type="radio" id="p1" name="payment" value="1"><label for="p1">★</label>
+                    </div>
+                    <div class="emoji-feedback" id="emoji-payment"></div>
+                </div>
+            </div>
+
+            <!-- Питання 4 -->
+            <div class="question" data-question="recommend">
+                <p>4. Чи порекомендуєте нас?</p>
+                <div class="stars-wrapper">
+                    <div class="stars" data-name="recommend">
+                        <input type="radio" id="r5" name="recommend" value="5"><label for="r5">★</label>
+                        <input type="radio" id="r4" name="recommend" value="4"><label for="r4">★</label>
+                        <input type="radio" id="r3" name="recommend" value="3"><label for="r3">★</label>
+                        <input type="radio" id="r2" name="recommend" value="2"><label for="r2">★</label>
+                        <input type="radio" id="r1" name="recommend" value="1"><label for="r1">★</label>
+                    </div>
+                    <div class="emoji-feedback" id="emoji-recommend"></div>
+                </div>
+            </div>
+
+            <!-- Питання 5 -->
+            <div class="question" data-question="wishes">
+                <p>5. Напишіть свої побажання щодо покращення сервісу</p>
+                <textarea name="wishes" rows="3" placeholder="Ваші ідеї та побажання..."></textarea>
+            </div>
+
+            <!-- Питання 6 -->
+            <div class="question" data-question="contact_name">
+                <p>6. Якщо з'явилися питання, залиште контакти</p>
+                <input type="text" name="contact_name" placeholder="Ваше ім'я" style="margin-bottom:10px;">
+                <input type="tel" name="contact_phone" placeholder="Телефон 📱">
+            </div>
+
+            <button type="submit" id="submitBtn">📩 Надіслати відгук</button>
+        </form>
+        <div id="thanks">✅ Дякуємо за ваш відгук!<br>Ви робите нашу каву смачнішою ☕</div>
+    </div>
+
+    <script>
+        (function() {
+            const form = document.getElementById('reviewForm');
+            const thanks = document.getElementById('thanks');
+            const btn = document.getElementById('submitBtn');
+            const messageBox = document.getElementById('messageBox');
+            const progressFill = document.getElementById('progressFill');
+            const progressLabel = document.getElementById('progressLabel');
+            const liveRatingSpan = document.querySelector('#liveRating span');
+
+            const starGroups = ['service', 'drink', 'payment', 'recommend'];
+            const textFields = ['wishes', 'contact_name', 'contact_phone'];
+            const totalFields = starGroups.length + textFields.length;
+
+            const emojiMap = {
+                1: '😡',
+                2: '😟',
+                3: '😐',
+                4: '😊',
+                5: '😍'
+            };
+
+            function showMessage(text, type) {
+                messageBox.textContent = text;
+                messageBox.className = type + ' show';
+                clearTimeout(messageBox._timeout);
+                messageBox._timeout = setTimeout(function() {
+                    messageBox.className = '';
+                    messageBox.style.display = 'none';
+                }, 4000);
+            }
+
+            function countFilledFields() {
+                var filled = 0;
+                starGroups.forEach(function(name) {
+                    if (form.querySelector('input[name="' + name + '"]:checked')) filled++;
+                });
+                textFields.forEach(function(name) {
+                    var el = form.querySelector('[name="' + name + '"]');
+                    if (el && el.value.trim() !== '') filled++;
+                });
+                return filled;
+            }
+
+            function updateProgress() {
+                var filled = countFilledFields();
+                var percent = Math.round((filled / totalFields) * 100);
+                progressFill.style.width = percent + '%';
+                progressLabel.textContent = filled + ' / ' + totalFields + ' заповнено';
+            }
+
+            function allStarsFilled() {
+                return starGroups.every(function(name) {
+                    return form.querySelector('input[name="' + name + '"]:checked');
+                });
+            }
+
+            function updateButtonState() {
+                if (allStarsFilled()) {
+                    btn.disabled = false;
+                } else {
+                    btn.disabled = true;
+                }
+                updateProgress();
+            }
+
+            function updateLiveRating() {
+                var sum = 0;
+                var count = 0;
+                starGroups.forEach(function(name) {
+                    var checked = form.querySelector('input[name="' + name + '"]:checked');
+                    if (checked) {
+                        sum += parseInt(checked.value);
+                        count++;
+                    }
+                });
+
+                if (count === 0) {
+                    liveRatingSpan.textContent = '—';
+                } else {
+                    var avg = (sum / count).toFixed(1);
+                    liveRatingSpan.textContent = avg + ' ★';
+                }
+            }
+
+            function updateEmoji(questionName) {
+                var checked = form.querySelector('input[name="' + questionName + '"]:checked');
+                var emojiEl = document.getElementById('emoji-' + questionName);
+                if (!emojiEl) return;
+
+                if (checked) {
+                    var val = parseInt(checked.value);
+                    emojiEl.textContent = emojiMap[val] || '';
+                    emojiEl.classList.add('active');
+                } else {
+                    emojiEl.textContent = '';
+                    emojiEl.classList.remove('active');
+                }
+            }
+
+            function highlightEmptyStars() {
+                var firstEmpty = null;
+                starGroups.forEach(function(name) {
+                    var questionDiv = form.querySelector('.question[data-question="' + name + '"]');
+                    var checked = form.querySelector('input[name="' + name + '"]:checked');
+                    if (!checked) {
+                        questionDiv.classList.add('error-highlight');
+                        if (!firstEmpty) firstEmpty = questionDiv;
+                        setTimeout(function() {
+                            questionDiv.classList.remove('error-highlight');
+                        }, 2000);
+                    }
+                });
+                if (firstEmpty) {
+                    firstEmpty.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            // Слухачі подій
+            form.addEventListener('change', function(e) {
+                if (e.target.type === 'radio') {
+                    var name = e.target.name;
+                    updateButtonState();
+                    updateLiveRating();
+                    updateEmoji(name);
+                }
+            });
+
+            form.addEventListener('input', function(e) {
+                if (e.target.type === 'text' || e.target.type === 'tel' || e.target.tagName === 'TEXTAREA') {
+                    updateProgress();
+                }
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                if (!allStarsFilled()) {
+                    showMessage('☝ Будь ласка, оцініть усі 4 критерії зірочками', 'error');
+                    highlightEmptyStars();
+                    return;
+                }
+
+                btn.disabled = true;
+                var originalText = btn.textContent;
+                btn.textContent = '⏳ Відправляю...';
+
+                var formData = new FormData(form);
+                var data = {
+                    service: formData.get('service'),
+                    drink: formData.get('drink'),
+                    payment: formData.get('payment'),
+                    recommend: formData.get('recommend'),
+                    wishes: formData.get('wishes') || '',
+                    contact_name: formData.get('contact_name') || '',
+                    contact_phone: formData.get('contact_phone') || '',
+                    timestamp: new Date().toISOString()
+                };
+
+                // ВАЖНО: замінити '/submit_review' на повний URL міні‑ПК
+                fetch('/submit_review', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    })
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('Помилка сервера');
+                        form.style.display = 'none';
+                        thanks.style.display = 'block';
+                        document.getElementById('liveRating').style.display = 'none';
+                        document.querySelector('.progress-wrapper').style.display = 'none';
+                        messageBox.style.display = 'none';
+                        thanks.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    })
+                    .catch(function() {
+                        showMessage('❌ Помилка відправки. Спробуйте ще раз.', 'error');
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                        updateButtonState();
+                    });
+            });
+
+            // Ініціалізація
+            updateButtonState();
+            updateLiveRating();
+            updateProgress();
+        })();
+    </script>
+</body>
+</html>
