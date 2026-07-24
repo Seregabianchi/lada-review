@@ -432,10 +432,15 @@
                     timestamp: new Date().toISOString()
                 };
 
-                // ====== ПРЯМА ВІДПРАВКА В TELEGRAM ======
+                // ====== ПРЯМА ВІДПРАВКА В TELEGRAM З ІДЕНТИФІКАТОРОМ АПАРАТА ======
                 var botToken = '8930123798:AAEtEGnrXkuyHIUbIi0ri9VELhXauOxiOZA';
                 var chatId = '873345013';
-                var message = '⭐ Новий відгук!\n';
+
+                // Отримуємо source з URL
+                var urlParams = new URLSearchParams(window.location.search);
+                var source = urlParams.get('source') || 'невідомий апарат';
+
+                var message = '⭐ Новий відгук (' + source + ')\n';
                 message += 'Сервіс: ' + data.service + ' з 5\n';
                 message += 'Напій: ' + data.drink + ' з 5\n';
                 message += 'Оплата: ' + data.payment + ' з 5\n';
