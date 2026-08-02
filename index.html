@@ -224,6 +224,10 @@
 
             const emojiMap = {1:'😡',2:'😟',3:'😐',4:'😊',5:'😍'};
 
+            // Получаем источник из URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const source = urlParams.get('source') || 'невідомий апарат';
+
             function showMessage(text, type) {
                 messageBox.textContent = text;
                 messageBox.className = type + ' show';
@@ -331,10 +335,10 @@
                     timestamp: new Date().toISOString()
                 };
 
-                // ====== ПРЯМАЯ ОТПРАВКА В ГРУППУ МОНИТОРИНГА ======
+                // Отправка в группу мониторинга с указанием источника
                 var botToken = '8878086128:AAEeugVhz-nWLE6cedLPkvaGmEc4LFbYJLg';
                 var chatId = '-1003980331765';
-                var message = '⭐ Новий відгук\n';
+                var message = '⭐ Новий відгук (' + source + ')\n';
                 message += 'Сервіс: ' + data.service + ' з 5\n';
                 if (data.wishes) message += 'Побажання: ' + data.wishes + '\n';
                 if (data.contact_name) message += 'Ім\'я: ' + data.contact_name + '\n';
